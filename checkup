@@ -1,0 +1,16 @@
+#!/bin/bash
+
+[ "$1" == "kill" ] && killall -9 $(basename $0) && exit
+[ "$1" == "monitor" ] && watch "column -ts $'\t' res" && exit
+
+cp list res
+
+while read target
+do
+	while read line
+	do
+		sed -i "s/$target.*/$target\t$line/" res
+	done < <(ping -i1800 $target) &
+	sleep 0.05
+done < list
+
